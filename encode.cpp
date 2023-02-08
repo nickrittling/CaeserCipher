@@ -13,6 +13,7 @@ std::string encode(int key, int l)
         std::ifstream infile;
         infile.open("words.txt");
         if(!infile) std::cout<<"File not found\n";
+
 	//vector of strings to hold words
         std::vector<std::string>words;
         std::string line;
@@ -21,16 +22,18 @@ std::string encode(int key, int l)
                 words.push_back(line);
         }
         infile.close();
+
 	//input random words and encode with key
+	//take random word from dictionary and put into vector
+	//add key to each character within word string inside the vector
+	//if the added value is greater than 90, which is Z in ASCII table
+	//add the overflow to 65 which is A
         std::string sen = "";
-        //std::string a = ""; //debug string
 	int length = l > 3 ? l : 3;
         for(int i = 0; i < length; i++)
         {
                 std::string temp = "";
                 temp += words[(std::rand() % words.size())];
-                //a += temp;
-                //a += " ";
                 for(int j = 0; j < temp.length(); j++)
                 {
                         if(temp[j] + key > 90)
@@ -93,60 +96,15 @@ int main(int argc, char** argv)
 	//seed random with time
 	std::srand(std::time(nullptr));
 
-	//open words.txt for words input
-	/*std::ifstream infile;
-	infile.open("words.txt");
-	if(!infile) std::cout<<"File not found\n";
-	*/
 
 	//open encode.txt for output
 	std::ofstream of;
 	of.open("encode.txt", std::fstream::out);
 	if(!of) std::cout<<"File not found\n";
 
-	/*
-	//vector of strings to hold words
-	std::vector<std::string>words;
-	std::string line;
-	while(getline (infile, line))
-	{
-		words.push_back(line);
-	}
-	infile.close();
-	*/
-
 	//random key
 	int key = std::rand() % 26;
 	
-	/*
-	//input random words and encode with key
-	std::string sen = "";
-	//std::string a = ""; //debug string
-	for(int i = 0; i < 3; i++)
-	{
-		std::string temp = "";
-		temp += words[(std::rand() % words.size())];
-		//a += temp;
-		//a += " ";
-		for(int j = 0; j < temp.length(); j++)
-		{
-			if(temp[j] + key > 90)
-			{
-				temp[j] = temp[j] + key - 90 + 65;
-			}
-			else
-			{
-				temp[j] += key;
-			}
-		}
-		sen += temp;
-		sen += ' ';
-		temp = "";
-	}
-	*/
-	//std::cout << "key = " << key << std::endl;
-	//std::cout << "original sentence: " << a << std::endl;
-	//std::cout << "encoded sentence:  " << sen;
 	//output number of sentences based on n
 	while(n-- > 0)
 	{
