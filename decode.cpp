@@ -22,16 +22,22 @@ int findKey(const std::vector<std::string>& word, std::string input)
         	end = input.find(delimiter, start);
     	}
         //for(auto it : sep) std::cout<<it<<" ";
-	for(int i = 0; i < sep.size(); i++)
+	std::vector<int> key {0,0,0};
+	for(int i = 0; i < 3; i++)
 	{
 		for(int k = 0; k < 26; k++){
-			std::cout<<sep[i]<<" ";
+			//std::cout<<sep[i]<<" ";
+			//key[i]++;
 			//std::vector<std::string>::iterator it;
 			//it = std::find (word.begin(), word.end(), sep[i]);
  	 		if (std::find(word.begin(), word.end(), sep[i]) != word.end())
-    			std::cout << "Element found in myints: " << '\n';
-  			else
-    			std::cout << "Element not found in myints\n";
+			{
+    				//std::cout << "Element found in myints: " << '\n';
+				//std::cout << "key is " << key[i] << std::endl;
+				break;
+			}
+  			//else
+    			//std::cout << "Element not found in myints\n";
 			for(int j = 0; j < sep[i].size(); j++)
 			{
 				if(sep[i][j] +1 > 90)
@@ -39,15 +45,27 @@ int findKey(const std::vector<std::string>& word, std::string input)
 					sep[i][j] = 65;
 				}
 				else sep[i][j]++;
+
 			}
+			key[i]++;
+		}
+	}
+
+	for(int i = 0; i < key.size() -1; i++)
+	{
+		//std::cout<<key[i] << std::endl;
+		if(key[i] != key[i+1])
+		{
+			std::cout<<"something wrong happened\n";
+			exit(1);
 		}
 	}
 
 
-	return 1;
+	return key[0];
 }//end findKey
 
-std::string decode(std::string input)
+void decode(std::string input)
 {
 	//loads encoded text
 	std::ifstream infile;
@@ -79,10 +97,35 @@ std::string decode(std::string input)
 		dict.push_back(line);
 	}
 	wordsIn.close();
+
+	//open decode.txt for output
+	std::ofstream of;
+	of.open("decode.txt", std::fstream::out);
+	if(!of) std::cout<<"File decode not found\n";
 	
 	//take a sentence and find key
-	int test = findKey(dict, ans[0]);
-	return "aaa";
+	int key = findKey(dict, ans[0]);
+
+	//decode with key
+	for(int i = 0; i < ans.size(); i++)
+	{
+		for(int j = 0; j < ans[i].size(); j++)
+		{
+			if(ans[i][j] == ' ') continue;
+			else if(ans[i][j] + key > 90)
+			{
+				ans[i][j] = ans[i][j] + key - 26;
+			}
+			else
+			{
+				ans[i][j] += key;
+			}
+		}
+
+		of << ans[i] << std::endl;
+
+	}
+
 
 }//end decode
 
@@ -127,6 +170,6 @@ int main(int argc, char** argv)
 	of.open("decode.txt", std::fstream::out);
 	if(!of) std::cout<<"File not found\n";
 	
-	std::string test = decode(input);
+	decode(input);
 	return 0;
 }//end main

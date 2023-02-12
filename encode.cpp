@@ -4,25 +4,16 @@
 #include <string>
 #include <vector>
 #include <random>
-#include <chrono>
 #include "unistd.h"
 
 std::string encode(int key, int l)
 {
-	typedef std::chrono::high_resolution_clock myclock;
-        myclock::time_point beginning = myclock::now();
-        myclock::duration d = myclock::now() - beginning;
-        unsigned seed = d.count();
-        std::minstd_rand0 generator (seed);
 
 	//open words.txt for words input
         std::ifstream infile;
         infile.open("words.txt");
         if(!infile) std::cout<<"File not found\n";
 
-	std::ofstream of;
-        of.open("encode.txt", std::fstream::out);
-        if(!of) std::cout<<"File not found\n";
 
 	//vector of strings to hold words
         std::vector<std::string>words;
@@ -32,6 +23,12 @@ std::string encode(int key, int l)
                 words.push_back(line);
         }
         infile.close();
+
+	//c++ 11 standard random
+	std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_real_distribution<double> gen(0, words.size());
+
 
 	//input random words and encode with key
 	//take random word from dictionary and put into vector
@@ -43,8 +40,8 @@ std::string encode(int key, int l)
         for(int i = 0; i < length; i++)
         {
                 std::string temp = "";
-                temp += words[(generator() % words.size())];
-		std::cout<<temp<<std::endl;
+                temp += words[((int)gen(mt) % words.size())];
+		//std::cout<<temp<<std::endl;
 		//of << temp << " ";
                 for(int j = 0; j < temp.length(); j++)
                 {
@@ -58,7 +55,7 @@ std::string encode(int key, int l)
                         }
                 }
                 sen += temp;
-                sen += ' ';
+                sen += " ";
                 temp = "";
         }
 	return sen;
@@ -80,14 +77,14 @@ int main(int argc, char** argv)
 			case 'n':
 				n = std::stoi(optarg);
 				n = n > 1 ? n : 1;
-				std::cout << "\nn = " << n << std::endl;
+				//std::cout << "\nn = " << n << std::endl;
 				continue;
 			case 'l':
 				l = std::stoi(optarg);
-				std::cout << "l = " << l << std::endl;
+				//std::cout << "l = " << l << std::endl;
 				continue;
 			case 'd':
-				std::cout << "The dictionary is located at  "<< get_current_dir_name() << std::endl;
+				std::cout << "The dictionary is located at /home/runner/Caesar-Cipher-1-comp-339-439-ds-6/include\n";//<< get_current_dir_name() << std::endl;
 				continue;
 			case 'o':
 				std::cout<<"output file is named encode.txt\n";
@@ -105,20 +102,18 @@ int main(int argc, char** argv)
 		break;
 	}//end for
 	
-	//seed random with chrono
-	typedef std::chrono::high_resolution_clock myclock;
-  	myclock::time_point beginning = myclock::now();
-	myclock::duration d = myclock::now() - beginning;
-  	unsigned seed = d.count();
-	std::minstd_rand0 generator (seed);
-
 	//open encode.txt for output
 	std::ofstream of;
 	of.open("encode.txt", std::fstream::out);
 	if(!of) std::cout<<"File not found\n";
+	
+	//random number generator	
+	std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_real_distribution<double> gen(0, 26);
 
 	//random key
-	int key = generator() % 26;
+	int key = (int)gen(mt);
 	
 	//output number of sentences based on n
 	while(n-- > 0)
