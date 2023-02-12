@@ -3,16 +3,26 @@
 #include <iomanip>
 #include <string>
 #include <vector>
-#include <cstdlib>
-#include <ctime>
+#include <random>
+#include <chrono>
 #include "unistd.h"
 
 std::string encode(int key, int l)
 {
+	typedef std::chrono::high_resolution_clock myclock;
+        myclock::time_point beginning = myclock::now();
+        myclock::duration d = myclock::now() - beginning;
+        unsigned seed = d.count();
+        std::minstd_rand0 generator (seed);
+
 	//open words.txt for words input
         std::ifstream infile;
         infile.open("words.txt");
         if(!infile) std::cout<<"File not found\n";
+
+	std::ofstream of;
+        of.open("encode.txt", std::fstream::out);
+        if(!of) std::cout<<"File not found\n";
 
 	//vector of strings to hold words
         std::vector<std::string>words;
@@ -27,18 +37,20 @@ std::string encode(int key, int l)
 	//take random word from dictionary and put into vector
 	//add key to each character within word string inside the vector
 	//if the added value is greater than 90, which is Z in ASCII table
-	//add the overflow to 65 which is A
+	//add the overflow to 64 to get result
         std::string sen = "";
 	int length = l > 3 ? l : 3;
         for(int i = 0; i < length; i++)
         {
                 std::string temp = "";
-                temp += words[(std::rand() % words.size())];
+                temp += words[(generator() % words.size())];
+		std::cout<<temp<<std::endl;
+		//of << temp << " ";
                 for(int j = 0; j < temp.length(); j++)
                 {
                         if(temp[j] + key > 90)
                         {
-                                temp[j] = temp[j] + key - 90 + 65;
+                                temp[j] = temp[j] + key - 90 + 64;
                         }
                         else
                         {
@@ -92,10 +104,13 @@ int main(int argc, char** argv)
 		}//end switch
 		break;
 	}//end for
-
-	//seed random with time
-	std::srand(std::time(nullptr));
-
+	
+	//seed random with chrono
+	typedef std::chrono::high_resolution_clock myclock;
+  	myclock::time_point beginning = myclock::now();
+	myclock::duration d = myclock::now() - beginning;
+  	unsigned seed = d.count();
+	std::minstd_rand0 generator (seed);
 
 	//open encode.txt for output
 	std::ofstream of;
@@ -103,7 +118,7 @@ int main(int argc, char** argv)
 	if(!of) std::cout<<"File not found\n";
 
 	//random key
-	int key = std::rand() % 26;
+	int key = generator() % 26;
 	
 	//output number of sentences based on n
 	while(n-- > 0)

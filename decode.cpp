@@ -5,7 +5,47 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <algorithm>
 #include "unistd.h"
+
+
+int findKey(const std::vector<std::string>& word, std::string input)
+{
+	std::string delimiter = " ";
+	int start = 0;
+   	int end = input.find(delimiter);
+	std::vector<std::string> sep;
+   	while (end != -1) 
+	{
+        	sep.push_back(input.substr(start, end - start));
+        	start = end + delimiter.size();
+        	end = input.find(delimiter, start);
+    	}
+        //for(auto it : sep) std::cout<<it<<" ";
+	for(int i = 0; i < sep.size(); i++)
+	{
+		for(int k = 0; k < 26; k++){
+			std::cout<<sep[i]<<" ";
+			//std::vector<std::string>::iterator it;
+			//it = std::find (word.begin(), word.end(), sep[i]);
+ 	 		if (std::find(word.begin(), word.end(), sep[i]) != word.end())
+    			std::cout << "Element found in myints: " << '\n';
+  			else
+    			std::cout << "Element not found in myints\n";
+			for(int j = 0; j < sep[i].size(); j++)
+			{
+				if(sep[i][j] +1 > 90)
+				{
+					sep[i][j] = 65;
+				}
+				else sep[i][j]++;
+			}
+		}
+	}
+
+
+	return 1;
+}//end findKey
 
 std::string decode(std::string input)
 {
@@ -27,7 +67,7 @@ std::string decode(std::string input)
 	{
 		ans.push_back(line);
 	}
-	for(auto it : ans) std::cout << it << std::endl;
+	//for(auto it : ans) std::cout << it << std::endl;
 
 	//load dictionary
 	std::ifstream wordsIn;
@@ -41,7 +81,7 @@ std::string decode(std::string input)
 	wordsIn.close();
 	
 	//take a sentence and find key
-	 
+	int test = findKey(dict, ans[0]);
 	return "aaa";
 
 }//end decode
@@ -87,6 +127,6 @@ int main(int argc, char** argv)
 	of.open("decode.txt", std::fstream::out);
 	if(!of) std::cout<<"File not found\n";
 	
-	decode(input);
+	std::string test = decode(input);
 	return 0;
 }//end main
